@@ -138,7 +138,7 @@ numWinO = 0
 numTied = 0
 
 # how many games do you want to play?
-for g in range(1000000):
+for g in range(10000):
    # reset global variables for new game
    gameboard = "--------------XO----OX--------------"
    gameover = False
