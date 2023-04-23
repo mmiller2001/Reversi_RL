@@ -99,7 +99,6 @@ class Agent:
             index = 0
             while move != options[index]:
                index += 1
-
             if i == 0:
                probs[index] == 100
                for j in range(len(probs)):
