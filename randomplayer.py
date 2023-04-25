@@ -48,6 +48,7 @@ class Agent:
    def __init__( self, xORo ):
       self.symbol = xORo
       self.board_states = list()
+      self.board_switch = list()
       self.dictionary = {}
 
       with open("__pycache__\\agent_kb.pyc",'r+') as file:
@@ -56,10 +57,10 @@ class Agent:
          for line in content.split('\n'):
             if len(line.strip()) != 0:
                substrings = line.split()
-               if len(substrings) == 2 and len(substrings[0]) == 9:
-                  gameboard = substrings[0]
-                  probabilities = [float(e) for e in substrings[1].split(',')]
-                  self.dictionary[gameboard] = probabilities
+               # if len(substrings) == 2 and len(substrings[0]) == 9:
+               gameboard = substrings[0]
+               probabilities = [float(e) for e in substrings[1].split(',')]
+               self.dictionary[gameboard] = probabilities
 
          # print(self.symbol, self.dictionary)
          file.close()
@@ -111,6 +112,7 @@ class Agent:
 
             update = {game: probs}
             self.dictionary.update(update)
+            self.board_switch.append([game,move,options,probs])
             i += 1
 
       elif status == -1:
@@ -121,10 +123,11 @@ class Agent:
                index += 1
 
             probs[index] -= probs[index]*(1/(math.pow(2,i+1)))
-            i += 1
-
             update = {game: probs}
             self.dictionary.update(update)
+            self.board_switch.append([game,move,options,probs])
+            
+            i += 1
       else: # status == 0
          i = 0
          for game, move, options, probs in reversed_board_states:
@@ -133,54 +136,25 @@ class Agent:
             while move != options[index]:
                index += 1
 
-            probs[index] -= probs[index]*(1/(math.pow(3,i+1)))
             update = {game: probs}
             self.dictionary.update(update)
+            self.board_switch.append([game,move,options,probs])
             i += 1
       
       self.board_states.clear()
 
    def stopPlaying( self ):
 
-      if self.symbol == 'X':
-         with open("__pycache__\\agent_kb.pyc",'r+') as file:
-            file.truncate()
-            for game_state in self.dictionary:
-               probs_int = [str(a) for a in self.dictionary[game_state]]
-               file.write(game_state + " " + (','.join(probs_int)) + "\n")
-            file.close()
-            pass
-      else:
-         global_dictionary = {}
-         with open("__pycache__\\agent_kb.pyc",'r+') as file:
-            content = file.read()
-
-            # Update the dictionary with first player
-            for line in content.split('\n'):
-               if len(line.strip()) != 0:
-                  substrings = line.split()
-                  if len(substrings) == 2 and len(substrings[0]) == 9:
-                     gameboard = substrings[0]
-                     probabilities = [float(e) for e in substrings[1].split(',')]
-                     global_dictionary[gameboard] = probabilities
-            
-            # Update global dictionary with second player
-            # global_dictionary.update(self.dictionary)
-            for game_state in self.dictionary:
-               if game_state not in global_dictionary:
-                  global_dictionary[game_state] = self.dictionary[game_state]
-
-            file.truncate()
-            file.close()
-            pass
-         
-         with open("__pycache__\\agent_kb.pyc",'r+') as file:
-            file.truncate()
-            for game_state in global_dictionary:
-               probs_int = [str(a) for a in global_dictionary[game_state]]
-               file.write(game_state + " " + (','.join(probs_int)) + "\n")
-            file.close()
-            pass
+      for game, move, options, probs in self.board_switch:
+         self.dictionary[game] = probs
+      
+      with open("__pycache__\\agent_kb.pyc",'r+') as file:
+         file.truncate()
+         for game_state in self.dictionary:
+            probs_int = [str(a) for a in self.dictionary[game_state]]
+            file.write(game_state + " " + (','.join(probs_int)) + "\n")
+         file.close()
+         pass
          
       print("Agent stopped training")
       self.dictionary = {}
