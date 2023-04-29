@@ -43,121 +43,123 @@ def isValidMove( b, x, p ): # board, index, piece
          or down           and flips(b,x,p, 6)  # down
          or down and left  and flips(b,x,p, 5)) # down/left
 
-class Agent:
+# class Agent:
    
-   def __init__( self, xORo ):
-      self.symbol = xORo
-      self.board_states = list()
-      self.board_switch = list()
-      self.dictionary = {}
+#    def __init__( self, xORo ):
+#       self.symbol = xORo
+#       self.board_states = list()
+#       self.board_switch = list()
+#       self.dictionary = {}
 
-      with open("__pycache__\\agent_kb.pyc",'r+') as file:
-         content = file.read()
+#       with open("__pycache__\\agent_kb.pyc",'r+') as file:
+#          content = file.read()
          
-         for line in content.split('\n'):
-            if len(line.strip()) != 0:
-               substrings = line.split()
-               # if len(substrings) == 2 and len(substrings[0]) == 9:
-               gameboard = substrings[0]
-               probabilities = [float(e) for e in substrings[1].split(',')]
-               self.dictionary[gameboard] = probabilities
+#          for line in content.split('\n'):
+#             if len(line.strip()) != 0:
+#                substrings = line.split()
+#                # if len(substrings) == 2 and len(substrings[0]) == 9:
+#                gameboard = substrings[0]
+#                probabilities = [float(e) for e in substrings[1].split(',')]
+#                self.dictionary[gameboard] = probabilities
 
-         # print(self.symbol, self.dictionary)
-         file.close()
-         pass
+#          # print(self.symbol, self.dictionary)
+#          file.close()
+#          pass
 
-   def getMove( self, gameboard ):
-      # picks a random point, then cycles to the next available space
-      number_list = list()
-      scope = 0
+#    def getMove( self, gameboard ):
+#       # picks a random point, then cycles to the next available space
+#       number_list = list()
+#       scope = 0
 
-      for i in range(36):
-         if isValidMove(gameboard,i,self.symbol):
-            number_list.append(i)
-            scope += 1
+#       for i in range(36):
+#          if isValidMove(gameboard,i,self.symbol):
+#             number_list.append(i)
+#             scope += 1
 
-      if gameboard in self.dictionary:
-         probs = self.dictionary.get(gameboard)
-         square = random.choices(number_list, weights=probs, k=1)
-         self.board_states.append([gameboard,square[0],number_list,probs])
-         move = square[0]
-      else:
-         probs = [(1/scope)*100 for i in range(len(number_list))]
-         square = random.choices(number_list, weights=((1/scope)*100,) * len(number_list), k=1) 
-         self.dictionary[gameboard] = probs
-         self.board_states.append([gameboard,square[0],number_list,probs])
-         move = square[0]
+#       if gameboard in self.dictionary:
+#          probs = self.dictionary.get(gameboard)
+#          square = random.choices(number_list, weights=probs, k=1)
+#          self.board_states.append([gameboard,square[0],number_list,probs])
+#          move = square[0]
+#       else:
+#          probs = [(1/scope)*100 for i in range(len(number_list))]
+#          square = random.choices(number_list, weights=((1/scope)*100,) * len(number_list), k=1) 
+#          self.dictionary[gameboard] = probs
+#          self.board_states.append([gameboard,square[0],number_list,probs])
+#          move = square[0]
 
-      return move
+#       return move
          
-   def endGame( self, status, gameboard ):
+#    def endGame( self, status, gameboard ):
       
-      reversed_board_states = list(reversed(self.board_states))
+#       reversed_board_states = list(reversed(self.board_states))
 
-      if status == 1: 
-         i = 0
-         for game, move, options, probs in reversed_board_states:
-            index = 0
-            while move != options[index]:
-               index += 1
-            if i == 0:
-               probs[index] == 100
-               for j in range(len(probs)):
-                  if index != j:
-                     probs[j] = 0
-            else:
-               probs[index] += probs[index]*(1/(math.pow(2,i+1)))
-               if probs[index] >= 99.8000:
-                  probs[index] = 100
+#       if status == 1: 
+#          i = 0
+#          for game, move, options, probs in reversed_board_states:
+#             index = 0
+#             while move != options[index]:
+#                index += 1
+#             if i == 0:
+#                probs[index] == 100
+#                for j in range(len(probs)):
+#                   if index != j:
+#                      probs[j] = 0
+#             else:
+#                probs[index] += probs[index]*0.25
+#                # probs[index] += probs[index]*(1/(math.pow(2,i+1)))
+#                if probs[index] >= 99.8000:
+#                   probs[index] = 100
 
-            update = {game: probs}
-            self.dictionary.update(update)
-            self.board_switch.append([game,move,options,probs])
-            i += 1
+#             update = {game: probs}
+#             self.dictionary.update(update)
+#             self.board_switch.append([game,move,options,probs])
+#             i += 1
 
-      elif status == -1:
-         i = 0
-         for game, move, options, probs in reversed_board_states:            
-            index = 0
-            while move != options[index]:
-               index += 1
+#       elif status == -1:
+#          i = 0
+#          for game, move, options, probs in reversed_board_states:            
+#             index = 0
+#             while move != options[index]:
+#                index += 1
 
-            probs[index] -= probs[index]*(1/(math.pow(2,i+1)))
-            update = {game: probs}
-            self.dictionary.update(update)
-            self.board_switch.append([game,move,options,probs])
+#             probs[index] -= probs[index]*0.25
+#             # probs[index] -= probs[index]*(1/(math.pow(2,i+1)))
+#             update = {game: probs}
+#             self.dictionary.update(update)
+#             self.board_switch.append([game,move,options,probs])
             
-            i += 1
-      else: # status == 0
-         i = 0
-         for game, move, options, probs in reversed_board_states:
+#             i += 1
+#       else: # status == 0
+#          i = 0
+#          for game, move, options, probs in reversed_board_states:
             
-            index = 0
-            while move != options[index]:
-               index += 1
+#             index = 0
+#             while move != options[index]:
+#                index += 1
 
-            update = {game: probs}
-            self.dictionary.update(update)
-            self.board_switch.append([game,move,options,probs])
-            i += 1
+#             update = {game: probs}
+#             self.dictionary.update(update)
+#             self.board_switch.append([game,move,options,probs])
+#             i += 1
       
-      self.board_states.clear()
+#       self.board_states.clear()
 
-   def stopPlaying( self ):
+#    def stopPlaying( self ):
 
-      for game, move, options, probs in self.board_switch:
-         self.dictionary[game] = probs
+#       for game, move, options, probs in self.board_switch:
+#          self.dictionary[game] = probs
       
-      with open("__pycache__\\agent_kb.pyc",'r+') as file:
-         file.truncate()
-         for game_state in self.dictionary:
-            probs_int = [str(a) for a in self.dictionary[game_state]]
-            file.write(game_state + " " + (','.join(probs_int)) + "\n")
-         file.close()
-         pass
+#       with open("__pycache__\\agent_kb.pyc",'r+') as file:
+#          file.truncate()
+#          for game_state in self.dictionary:
+#             probs_int = [str(a) for a in self.dictionary[game_state]]
+#             file.write(game_state + " " + (','.join(probs_int)) + "\n")
+#          file.close()
+#          pass
          
-      print("Agent stopped training")
-      self.dictionary = {}
+#       print("Agent stopped training")
+#       self.dictionary = {}
 
 class RandomPlayer:
    

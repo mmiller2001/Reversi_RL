@@ -1,6 +1,6 @@
 #from agent import Agent
 from randomplayer import RandomPlayer
-from randomplayer import Agent
+from agent import Agent
 import random
 import sys
 
@@ -138,7 +138,7 @@ numWinO = 0
 numTied = 0
 
 # how many games do you want to play?
-for g in range(100):
+for g in range(10000):
    # reset global variables for new game
    gameboard = "--------------XO----OX--------------"
    gameover = False

@@ -1,6 +1,6 @@
 #from agent import Agent
 from randomplayer import RandomPlayer
-from randomplayer import Agent
+from agent import Agent
 import random
 import sys
 
