@@ -106,7 +106,7 @@ class Agent:
                   if index != j:
                      probs[j] = 0
             else:
-               probs[index] += probs[index]*0.25
+               probs[index] += probs[index]*0.35
                # probs[index] += probs[index]*(1/(math.pow(2,i+1)))
                if probs[index] >= 99.8000:
                   probs[index] = 100
@@ -123,7 +123,7 @@ class Agent:
             while move != options[index]:
                index += 1
 
-            probs[index] -= probs[index]*0.25
+            probs[index] -= probs[index]*0.35
             # probs[index] -= probs[index]*(1/(math.pow(2,i+1)))
             update = {game: probs}
             self.dictionary.update(update)
